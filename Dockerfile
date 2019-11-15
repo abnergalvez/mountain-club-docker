@@ -1,7 +1,7 @@
 FROM composer:1.9.1 as build
 WORKDIR /app
 COPY ./src /app
-RUN composer --quiet install
+RUN composer install
 
 FROM php:7.2.24-apache-stretch
 ENV DEBIAN_FRONTEND=nointeractive
