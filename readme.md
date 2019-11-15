@@ -31,7 +31,7 @@ Configurar las variables de entorno en el archivo `.env`:
 * DB_USERNAME=mountainclub
 * DB_PASSWORD=secret
 
-Configurar las variables de entorno en el archivo `docker-compose.yml`:
+Configurar las variables de entorno en el archivo `docker-compose.yml` en el servicio `db`:
 
 * MYSQL_ROOT_PASSWORD: secret
 * MYSQL_DATABASE: mountainclub
