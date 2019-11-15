@@ -1,0 +1,48 @@
+version: "3"
+
+services:
+  reverse-proxy:
+    image: traefik:v2.0.4
+    command: --providers.docker
+    ports:
+      - 80:80
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mountainclub:latest
+    restart: unless-stopped
+    depends_on:
+      - db
+    volumes:
+      - ./.env:/var/www/html/.env
+      - ./storage/app/public:/var/www/html/storage/app/public
+      - ./storage/framework/cache:/var/www/html/storage/framewokr/cache
+      - ./storage/framework/sessions:/var/www/html/storage/framewokr/sessions
+      - ./storage/framework/views:/var/www/html/storage/framewokr/views
+      - ./storage/logs:/var/www/html/storage/logs
+    environment:
+      DB_HOST: db
+      DB_DATABASE: mountainclub
+      DB_USERNAME: mountainclub
+      DB_PASSWORD: secret
+    command: >
+      /bin/bash -c "chgrp -R www-data storage/ bootstrap/cache
+      && chmod -R ug+rwx storage/ bootstrap/cache
+      && apache2ctl -DFOREGROUND"
+    labels:
+      - "traefik.http.routers.localhost.rule=Host(`localhost`)"
+
+  db:
+    image: mysql:5.7
+    restart: unless-stopped
+    volumes:
+      - ./mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: mountainclub
+      MYSQL_USER: mountainclub
+      MYSQL_PASSWORD: secret
